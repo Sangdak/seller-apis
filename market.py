@@ -11,6 +11,30 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(page, campaign_id, access_token):
+    """Получить список товаров из каталога магазина.
+
+    Args:
+        page (str): Идентификатор страницы c результатами.
+            Если параметр не указан, возвращается самая
+            старая страница.
+        campaign_id (int): Идентификатор кампании.
+        access_token (str): Данные авторизации.
+
+    Returns:
+        response_object.get("result") (dict): Содержит
+            развёрнутую информацию о товарах, содержащихся
+            в каталоге магазина.
+
+    .. _YandexMarket API reference:
+        https://yandex.ru/dev/market/partner-api/doc/ru/reference/offer-mappings/getOfferMappingEntries
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных аргументов отсутствует.
+        requests.HTTPError: При возникновении ошибки HTTP.
+        requests.ConnectionError: При возникновении ошибки соединения.
+        requests.JSONDecodeError: При ошибке во время декодирования в json.
+
+    """
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
         "Content-Type": "application/json",
@@ -30,6 +54,34 @@ def get_product_list(page, campaign_id, access_token):
 
 
 def update_stocks(stocks, campaign_id, access_token):
+    """Передать информацию по остаткам.
+
+    Передает данные об остатках товаров на витрине. В одном
+    запросе можно передать от одного до 2000 товаров.
+
+    Args:
+        stocks (list of dict): Информация об остатках
+            товара (товаров) на складе.
+        campaign_id (int): Идентификатор кампании.
+        access_token (str): Данные авторизации.
+
+    Returns:
+        response_object (requests.Response) : в случае успеха:
+            Body:
+                {
+                    "status": "OK"
+                }
+
+    .. _YandexMarket API reference:
+        https://yandex.ru/dev/market/partner-api/doc/ru/reference/stocks/updateStocks
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных аргументов отсутствует.
+        requests.HTTPError: При возникновении ошибки HTTP.
+        requests.ConnectionError: При возникновении ошибки соединения.
+        requests.JSONDecodeError: При ошибке во время декодирования в json.
+
+    """
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
         "Content-Type": "application/json",
@@ -46,6 +98,33 @@ def update_stocks(stocks, campaign_id, access_token):
 
 
 def update_price(prices, campaign_id, access_token):
+    """Установить цены на товары.
+
+    В течение минуты можно установить цены для 500 товаров.
+
+    Args:
+        prices (list of dict): Список с информацией по
+            товарам и новыми ценами на них.
+        campaign_id (int): Идентификатор кампании.
+        access_token (str): Данные авторизации.
+
+    Returns:
+        response_object (requests.Response) : в случае успеха:
+            Body:
+                {
+                    "status": "OK"
+                }
+
+    .. _YandexMarket API reference:
+        https://yandex.ru/dev/market/partner-api/doc/ru/reference/prices/updatePrices
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных аргументов отсутствует.
+        requests.HTTPError: При возникновении ошибки HTTP.
+        requests.ConnectionError: При возникновении ошибки соединения.
+        requests.JSONDecodeError: При ошибке во время декодирования в json.
+
+    """
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
         "Content-Type": "application/json",
@@ -62,7 +141,20 @@ def update_price(prices, campaign_id, access_token):
 
 
 def get_offer_ids(campaign_id, market_token):
-    """Получить артикулы товаров Яндекс маркета"""
+    """Получить артикулы товаров.
+
+    Args:
+        campaign_id (int): Идентификатор кампании.
+        market_token (str): Данные маркета для авторизации.
+
+    Returns:
+        offer_ids (list) : Возвращает список артикулов (SKU)
+            товаров магазина.
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных аргументов отсутствует.
+
+    """
     page = ""
     product_list = []
     while True:
@@ -78,9 +170,29 @@ def get_offer_ids(campaign_id, market_token):
 
 
 def create_stocks(watch_remnants, offer_ids, warehouse_id):
+    """Сформировать остатки.
+
+    Args:
+        watch_remnants (dict): Словарь с актуальной информацией с сайта
+            по остаткам товара.
+        offer_ids (list): Список содержащий перечисление артикулов
+            всех товаров магазина.
+        warehouse_id (int):Идентификатор склада
+
+    Returns:
+        В случае успешного выполнения запроса:
+            stocks (list of dict): Актуальная информация по остаткам
+            товаров. Список словарей, либо пустой список.
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных
+            аргументов отсутствует.
+
+    """
     # Уберем то, что не загружено в market
     stocks = list()
-    date = str(datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z")
+    date = str(datetime.datetime.utcnow().replace(
+        microsecond=0).isoformat() + "Z")
     for watch in watch_remnants:
         if str(watch.get("Код")) in offer_ids:
             count = str(watch.get("Количество"))
@@ -123,6 +235,22 @@ def create_stocks(watch_remnants, offer_ids, warehouse_id):
 
 
 def create_prices(watch_remnants, offer_ids):
+    """Создать список цен.
+
+    Args:
+        watch_remnants (dict): Идентификатор клиента.
+        offer_ids (list): Список содержащий перечисление
+        артикулов всех товаров магазина.
+
+    Returns:
+        prices (list of dict): Список содержащий словари
+        с указанием стоимости товаров в магазине.
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных
+            аргументов отсутствует.
+
+    """
     prices = []
     for watch in watch_remnants:
         if str(watch.get("Код")) in offer_ids:
@@ -143,6 +271,24 @@ def create_prices(watch_remnants, offer_ids):
 
 
 async def upload_prices(watch_remnants, campaign_id, market_token):
+    """Обновить цены товаров без изменения их карточек в асинхронном режиме.
+
+    Args:
+        watch_remnants (dict): Информация с сайта по остаткам товара.
+        campaign_id (int): Идентификатор кампании.
+        market_token (str): Данные маркета для авторизации.
+
+    Returns:
+        prices (list of dict): Список словарей со стоимостью товаров.
+
+    Examples:
+        >>> print(isinstance(upload_prices, list)))
+        True
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных аргументов отсутствует.
+
+    """
     offer_ids = get_offer_ids(campaign_id, market_token)
     prices = create_prices(watch_remnants, offer_ids)
     for some_prices in list(divide(prices, 500)):
@@ -150,7 +296,31 @@ async def upload_prices(watch_remnants, campaign_id, market_token):
     return prices
 
 
-async def upload_stocks(watch_remnants, campaign_id, market_token, warehouse_id):
+async def upload_stocks(
+        watch_remnants, campaign_id,
+        market_token, warehouse_id,
+):
+    """Обновить остатки товаров в асинхронном режиме.
+
+    Args:
+        watch_remnants (dict): Информация с сайта по остаткам товара.
+        campaign_id (int): Идентификатор кампании.
+        market_token (str): Данные маркета для авторизации.
+        warehouse_id (int):Идентификатор склада
+
+    Returns:
+        not_empty (list): Список товаров, запасы которых не равня нулю.
+        stocks (list of dict): Актуальная информация по остаткам товаров.
+
+    Examples:
+        >>> print(isinstance(upload_stocks, (list, list)))
+        True
+
+    Raises:
+        AttributeError: Если какой-либо из обязательных
+            аргументов отсутствует.
+
+    """
     offer_ids = get_offer_ids(campaign_id, market_token)
     stocks = create_stocks(watch_remnants, offer_ids, warehouse_id)
     for some_stock in list(divide(stocks, 2000)):
