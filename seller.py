@@ -371,7 +371,7 @@ def divide(lst: list, n: int):
 
 
 async def upload_prices(watch_remnants, client_id, seller_token):
-    """Асинхронно обновить цены товаров без изменения их карточек.
+    """Обновить цены товаров без изменения их карточек в асинхронном режиме.
 
     Args:
         watch_remnants (dict): Информация с сайта по остаткам товара.
@@ -397,7 +397,7 @@ async def upload_prices(watch_remnants, client_id, seller_token):
 
 
 async def upload_stocks(watch_remnants, client_id, seller_token):
-    """Асинхронно обновить остатки товаров.
+    """Обновить остатки товаров в асинхронном режиме.
 
     Args:
         watch_remnants (dict): Информация с сайта по остаткам товара.
