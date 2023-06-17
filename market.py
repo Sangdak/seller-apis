@@ -17,7 +17,7 @@ def get_product_list(page, campaign_id, access_token):
         page (str): Идентификатор страницы c результатами.
             Если параметр не указан, возвращается самая
             старая страница.
-        campaign_id (int): Идентификатор кампании.
+        campaign_id (str): Идентификатор кампании.
         access_token (str): Данные авторизации.
 
     Returns:
@@ -306,7 +306,7 @@ async def upload_stocks(
         watch_remnants (dict): Информация с сайта по остаткам товара.
         campaign_id (int): Идентификатор кампании.
         market_token (str): Данные маркета для авторизации.
-        warehouse_id (int):Идентификатор склада
+        warehouse_id (str):Идентификатор склада
 
     Returns:
         not_empty (list): Список товаров, запасы которых не равны нулю.
