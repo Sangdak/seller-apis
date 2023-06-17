@@ -309,7 +309,7 @@ async def upload_stocks(
         warehouse_id (int):Идентификатор склада
 
     Returns:
-        not_empty (list): Список товаров, запасы которых не равня нулю.
+        not_empty (list): Список товаров, запасы которых не равны нулю.
         stocks (list of dict): Актуальная информация по остаткам товаров.
 
     Examples:
