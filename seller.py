@@ -27,7 +27,7 @@ def get_product_list(last_id, client_id, seller_token):
         seller_token (str): API-ключ.
 
     Returns:
-        json: В случае успешного выполнения запроса ключи:
+        dict: В случае успешного выполнения запроса ключи:
             - items (list of dicts): Список товаров. Каждый словарь содержит
                 ключи `product_id` (int) и `offer_id` (str), необходимые для
                 идентификации товара. Требуются для выполнения последующих
@@ -35,7 +35,7 @@ def get_product_list(last_id, client_id, seller_token):
             - last_id (str): Идентификатор последнего значения на странице.
             - total (int): Общее количество товаров.
 
-        json: В случае неудачного выполнения запроса ключи:
+        dict: В случае неудачного выполнения запроса ключи:
             - code (int): Код ошибки.
             - details (list of dicts): Дополнительная информация об ошибке.
                 Каждый словарь содержит ключи `typeUrl` (str) и `value` (str).
